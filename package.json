@@ -1,0 +1,57 @@
+{
+  "name": "tokenresearch-image-gen",
+  "version": "3.1.3",
+  "description": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
+  "icon": "plugins/tokenresearch-image-gen/assets/plugin-logo.png",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "tokenresearch",
+    "image-generation",
+    "nano-banana"
+  ],
+  "author": {
+    "name": "TokenResearch",
+    "url": "https://www.ciyuanzhiyan.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangyunjeff/tokenresearch-image-gen.git"
+  },
+  "homepage": "https://www.ciyuanzhiyan.com/",
+  "bugs": {
+    "url": "https://github.com/wangyunjeff/tokenresearch-image-gen/issues"
+  },
+  "type": "module",
+  "main": "./dsh/index.js",
+  "exports": {
+    ".": "./dsh/index.js",
+    "./locale/*": "./locale/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dsh/",
+    "locale/",
+    "plugins/tokenresearch-image-gen/skills/",
+    "plugins/tokenresearch-image-gen/assets/plugin-logo.png",
+    "README.md",
+    "VERSION.txt"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./dsh/cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "check": "node --check dsh/index.js && node --test dsh/package.test.mjs"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-skill-filesystem": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-skill-filesystem": {
+      "optional": true
+    }
+  }
+}

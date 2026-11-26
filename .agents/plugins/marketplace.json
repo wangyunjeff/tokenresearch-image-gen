@@ -1,0 +1,20 @@
+{
+  "name": "tokenresearch-plugins",
+  "interface": {
+    "displayName": "TokenResearch Image Gen"
+  },
+  "plugins": [
+    {
+      "name": "tokenresearch-image-gen",
+      "source": {
+        "source": "local",
+        "path": "./plugins/tokenresearch-image-gen"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

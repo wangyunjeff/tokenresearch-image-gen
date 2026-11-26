@@ -1,0 +1,4 @@
+interface:
+  display_name: "TokenResearch Image Gen"
+  short_description: "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。"
+  default_prompt: "使用 $tokenresearch-image-gen 生成或编辑图片。先检查本机密钥与分组可用模型。"

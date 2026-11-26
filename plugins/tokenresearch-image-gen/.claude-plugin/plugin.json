@@ -1,0 +1,24 @@
+{
+  "name": "tokenresearch-image-gen",
+  "displayName": "TokenResearch Image Gen",
+  "version": "3.1.3",
+  "description": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
+  "icon": "./assets/plugin-logo.png",
+  "author": {
+    "name": "TokenResearch",
+    "url": "https://www.ciyuanzhiyan.com/"
+  },
+  "homepage": "https://www.ciyuanzhiyan.com/",
+  "repository": "https://github.com/wangyunjeff/tokenresearch-image-gen",
+  "keywords": [
+    "tokenresearch",
+    "image-generation",
+    "gpt-image-2",
+    "nano-banana",
+    "gemini",
+    "grok",
+    "seedream",
+    "midjourney",
+    "image-edit"
+  ]
+}

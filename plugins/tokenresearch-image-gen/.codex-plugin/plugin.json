@@ -1,0 +1,27 @@
+{
+  "name": "tokenresearch-image-gen",
+  "version": "3.1.3",
+  "description": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
+  "author": {
+    "name": "TokenResearch"
+  },
+  "homepage": "https://www.ciyuanzhiyan.com/",
+  "repository": "https://github.com/wangyunjeff/tokenresearch-image-gen",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "TokenResearch Image Gen",
+    "shortDescription": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
+    "longDescription": "使用生图分组的 API Key 访问 TokenResearch。插件按模型能力选择接口，在提交前检查参数，并把结果和任务记录保存在本机。",
+    "developerName": "TokenResearch",
+    "category": "Productivity",
+    "capabilities": [
+      "Write"
+    ],
+    "brandColor": "#18A9B0",
+    "composerIcon": "./assets/composer-icon.png",
+    "logo": "./assets/plugin-logo.png",
+    "logoDark": "./assets/plugin-logo-dark.png",
+    "websiteURL": "https://www.ciyuanzhiyan.com/",
+    "defaultPrompt": "使用 $tokenresearch-image-gen 生成或编辑图片。先检查本机密钥与分组可用模型。"
+  }
+}

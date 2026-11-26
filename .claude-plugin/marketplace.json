@@ -1,0 +1,23 @@
+{
+  "name": "tokenresearch-plugins",
+  "owner": {
+    "name": "TokenResearch",
+    "url": "https://www.ciyuanzhiyan.com/"
+  },
+  "description": "TokenResearch 生图插件市场（Claude Code / ZCode）",
+  "plugins": [
+    {
+      "name": "tokenresearch-image-gen",
+      "displayName": "TokenResearch Image Gen",
+      "source": "./plugins/tokenresearch-image-gen",
+      "description": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
+      "icon": "https://www.ciyuanzhiyan.com/brand-logos/token-research-mark.svg",
+      "homepage": "https://www.ciyuanzhiyan.com/",
+      "author": {
+        "name": "TokenResearch",
+        "url": "https://www.ciyuanzhiyan.com/"
+      },
+      "category": "productivity"
+    }
+  ]
+}

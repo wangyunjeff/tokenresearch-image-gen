@@ -1,0 +1,34 @@
+# Local secrets and machine-specific config
+.env
+.env.*
+*.local
+*.key
+*.pem
+
+# Generated output and logs
+output/
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# Plugin local artifacts
+plugins/tokenresearch-image-gen/output/
+plugins/tokenresearch-image-gen/logs/
+plugins/tokenresearch-image-gen/tmp/
+plugins/tokenresearch-image-gen/temp/
+plugins/tokenresearch-image-gen/*.log
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+.tokenresearch/
+.tokenresearch-image-gen-jobs/
+tokenresearch-images/
+node_modules/
