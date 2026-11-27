@@ -314,6 +314,66 @@
       }
     },
     {
+      "id": "gpt-image-2.6-flare",
+      "protocol": "openai-images",
+      "billing": "unknown",
+      "summary": "Image 2.6 Flare 文生图。",
+      "generate": {
+        "endpoint": "/v1/images/generations"
+      },
+      "edit": [],
+      "size": {
+        "param": "size",
+        "ratios": [
+          "1:1"
+        ],
+        "resolutions": [
+          "1K"
+        ],
+        "defaultRatio": "1:1",
+        "defaultResolution": "1K",
+        "pixels": {
+          "1K": {
+            "1:1": "1024x1024"
+          }
+        }
+      },
+      "n": {
+        "max": 1
+      },
+      "options": {}
+    },
+    {
+      "id": "gpt-image-2.6-sunburst",
+      "protocol": "openai-images",
+      "billing": "unknown",
+      "summary": "Image 2.6 Sunburst 文生图。",
+      "generate": {
+        "endpoint": "/v1/images/generations"
+      },
+      "edit": [],
+      "size": {
+        "param": "size",
+        "ratios": [
+          "1:1"
+        ],
+        "resolutions": [
+          "1K"
+        ],
+        "defaultRatio": "1:1",
+        "defaultResolution": "1K",
+        "pixels": {
+          "1K": {
+            "1:1": "1024x1024"
+          }
+        }
+      },
+      "n": {
+        "max": 1
+      },
+      "options": {}
+    },
+    {
       "id": "az-gpt-image-2",
       "protocol": "openai-images",
       "billing": "unknown",

@@ -1,6 +1,6 @@
 {
   "name": "tokenresearch-image-gen",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "description": "通过 TokenResearch 生成和编辑图片，支持参考图、批量任务和本地保存。",
   "author": {
     "name": "TokenResearch"

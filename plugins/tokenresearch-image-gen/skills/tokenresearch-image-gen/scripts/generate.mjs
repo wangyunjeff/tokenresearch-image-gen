@@ -22,7 +22,7 @@ const API_ROOT = "https://ciyuanzhiyan.com";
 const IMAGES_EDITS_URL = `${API_ROOT}/v1/images/edits`;
 const CHAT_COMPLETIONS_URL = `${API_ROOT}/v1/chat/completions`;
 const MODELS_URL = `${API_ROOT}/v1/models`;
-const PLUGIN_VERSION = "3.1.4";
+const PLUGIN_VERSION = "3.1.5";
 const DEFAULT_MODEL = "gpt-image-2";
 // Model ids from older plugin versions: gpt-image-2-4k became gpt-image-2 + 4K.
 const LEGACY_MODEL_ALIASES = { "gpt-image-2-4k": { model: "gpt-image-2", resolution: "4K" } };
