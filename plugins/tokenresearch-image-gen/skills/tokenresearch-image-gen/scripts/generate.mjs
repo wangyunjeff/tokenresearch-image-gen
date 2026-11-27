@@ -16,12 +16,13 @@ import {
   selectEditVariant,
 } from "./catalog.mjs";
 import { buildGeminiChatBody, decodeBase64Image, geminiStageError, parseGeminiChatResponse, postJsonOverHttps, safeErrorText } from "./gemini.mjs";
+import { runSetup } from "./setup.mjs";
 
 const API_ROOT = "https://ciyuanzhiyan.com";
 const IMAGES_EDITS_URL = `${API_ROOT}/v1/images/edits`;
 const CHAT_COMPLETIONS_URL = `${API_ROOT}/v1/chat/completions`;
 const MODELS_URL = `${API_ROOT}/v1/models`;
-const PLUGIN_VERSION = "3.1.3";
+const PLUGIN_VERSION = "3.1.4";
 const DEFAULT_MODEL = "gpt-image-2";
 // Model ids from older plugin versions: gpt-image-2-4k became gpt-image-2 + 4K.
 const LEGACY_MODEL_ALIASES = { "gpt-image-2-4k": { model: "gpt-image-2", resolution: "4K" } };
@@ -280,7 +281,7 @@ function getEnabledWorkersOrExit(config) {
   if (ENV_API_KEY) return [{ id: "env", name: "TOKENRESEARCH_KEY", apiKey: ENV_API_KEY, enabled: true }];
   const worker = getPrimaryWorker(config, { requireEnabled: true });
   if (!worker) {
-    console.error("ERROR: No TokenResearch Key is configured. Set TOKENRESEARCH_KEY in your local client environment. See https://www.ciyuanzhiyan.com/#/docs/keys.");
+    console.error("ERROR: No TokenResearch Key is configured. Run --setup and open the local setup page.");
     process.exit(1);
   }
   return [worker];
@@ -293,7 +294,7 @@ function workerLabel(worker) {
 
 function buildConfigSummary(config, { envKey = ENV_API_KEY, source = CONFIG_PATH } = {}) {
   const workers = getConfiguredWorkers(config);
-  const primaryWorker = getPrimaryWorker(config);
+  const primaryWorker = getPrimaryWorker(config, { requireEnabled: true });
   const legacyExtraCount = Math.max(0, workers.length - (primaryWorker ? 1 : 0));
   return {
     插件版本: PLUGIN_VERSION,
@@ -4106,6 +4107,8 @@ function parseArgs(argv) {
   while (i < argv.length) {
     const value = argv[i];
     if (value === "--get-config") args.flags.getConfig = true;
+    else if (value === "--setup") args.flags.setup = true;
+    else if (value === "--replace-key") args.flags.replaceKey = true;
     else if (value === "--version" || value === "-v") args.flags.version = true;
     else if (value === "--config-path") args.flags.configPath = true;
     else if (value === "--list-models") args.flags.listModels = true;
@@ -4208,6 +4211,7 @@ CONFIG
   --version                     print the plugin version
   --get-config
   --config-path
+  --setup [--replace-key]        start the local browser setup
   --list-models                 models in the TokenResearch catalog, marked available/unavailable for the saved Key
   --refresh-models              reload the configured TokenResearch capability catalog, or use bundled profiles
   --set-model <MODEL>           change the long-term default model (factory default ${DEFAULT_MODEL})
@@ -4217,8 +4221,7 @@ CONFIG
 
 FIRST USE
   runtime: Node.js 18+ (Python is not required)
-  create a Key for an image-enabled group: https://www.ciyuanzhiyan.com/#/docs/keys
-  set TOKENRESEARCH_KEY locally or use --set-key
+  run --setup and open the local URL it prints
 
 GENERATE
   --prompt "..." [--model MODEL] [--aspect R] [--resolution 1K|2K|4K] [--quality Q] [--background B] [--output-format F] [--count 1..${MAX_GENERATION_COUNT}] [--preview] [--no-resize] [--dry-run]
@@ -4277,14 +4280,59 @@ DEFAULTS
 // GET /v1/models with the saved Key: the models this Key's group can call, with
 // each model's declared endpoint types. Free; never a paid request.
 async function fetchKeyModels(apiKey) {
-  const res = await requestWithTimeout(MODELS_URL, { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" } }, 15_000);
-  if (!res.ok) throw new Error(`GET /v1/models returned HTTP ${res.status}`);
+  const res = await requestWithTimeout(MODELS_URL, { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" }, redirect: "error" }, 15_000);
+  if (!res.ok) {
+    const error = new Error(`GET /v1/models returned HTTP ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
   const data = await res.json();
   return (Array.isArray(data?.data) ? data.data : []).map((item) => ({ id: String(item.id || ""), endpointTypes: Array.isArray(item.supported_endpoint_types) ? item.supported_endpoint_types : [] }));
 }
 
 function savedApiKey(config) {
   return ENV_API_KEY || getPrimaryWorker(config, { requireEnabled: true })?.apiKey || "";
+}
+
+async function configureInBrowser(config, replaceKey) {
+  if (ENV_API_KEY) {
+    console.log("SETUP_SKIPPED: TOKENRESEARCH_KEY takes precedence. Update that environment variable to change the active Key.");
+    return;
+  }
+  if (savedApiKey(config) && !replaceKey) {
+    console.log("SETUP_SKIPPED: A local Key is already configured. To change it, use --setup --replace-key.");
+    return;
+  }
+  try {
+    assertWritableDir(CONFIG_DIR);
+  } catch (error) {
+    if (!isPermissionError(error)) throw error;
+    console.error(`SETUP_BLOCKED: The client cannot write to ${CONFIG_DIR} (${error.code}). Allow the setup command to write to this directory and retry.`);
+    process.exitCode = 1;
+    return;
+  }
+  const result = await runSetup({
+    currentModel: config.model,
+    async fetchModels(key) {
+      const listed = new Set((await fetchKeyModels(key)).map(({ id }) => id));
+      return catalogModelIds().filter((id) => listed.has(id));
+    },
+    save(key, model) {
+      const latest = loadConfig();
+      if (!replaceKey && savedApiKey(latest)) return false;
+      saveConfig({ ...replaceWithSingleKey(latest, key), model });
+      return true;
+    },
+    onReady(url) {
+      console.log(`SETUP_URL: ${url}`);
+    },
+  });
+  if (result) {
+    console.log(`SETUP_COMPLETE: Default model ${result.model}`);
+  } else {
+    console.log("SETUP_EXPIRED: Run --setup again.");
+    process.exitCode = 1;
+  }
 }
 
 // A model the catalog does not document can still be tried when the Key lists
@@ -4381,7 +4429,7 @@ async function main() {
   const paidRun = !flags.dryRun && (prompts.length > 0 || flags.batchFile || flags.edit || flags.workflowBatchEdit || flags.nailStressTest);
   CATALOG = await loadCatalog({
     cachePath: CATALOG_CACHE_PATH,
-    allowNetwork: !!(paidRun || flags.listModels || flags.refreshModels || flags.setModel),
+    allowNetwork: !!(paidRun || flags.setup || flags.listModels || flags.refreshModels || flags.setModel),
     force: !!flags.refreshModels,
   });
   if (CATALOG.warning && (paidRun || flags.listModels || flags.refreshModels)) console.warn(`NOTICE: ${CATALOG.warning}; using the ${CATALOG.source}.`);
@@ -4390,6 +4438,12 @@ async function main() {
     if (!flags.listModels && prompts.length === 0) return;
   }
   const config = loadConfig();
+  if (flags.setup) return configureInBrowser(config, flags.replaceKey);
+  if (flags.replaceKey) {
+    console.error("ERROR: --replace-key requires --setup.");
+    process.exitCode = 1;
+    return;
+  }
   try {
     // --model may name a model the Key lists but the catalog does not document
     // yet; --set-model only accepts documented models.
